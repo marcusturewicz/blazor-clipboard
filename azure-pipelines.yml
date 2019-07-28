@@ -33,7 +33,7 @@ jobs:
     buildConfiguration: 'Release'
     restoreBuildProjects: '**/*.csproj'
     testProjects: '**/*Test.csproj'
-    publishProject: '**/BlazorClipboard.csproj'
+    packProject: '**/BlazorClipboard.csproj'
     dotnetSDK: 3.0.100-preview6-012264
   steps:
   - checkout: self
@@ -57,14 +57,10 @@ jobs:
     inputs:
       command: test
       projects: $(testProjects)
-      arguments: --configuration $(buildConfiguration)
+      arguments: --configuration $(buildConfiguration) --no-build
   - task: DotNetCoreCLI@2
-    displayName: Publish
+    displayName: pack
     inputs:
-      command: publish
+      command: pack
       projects: $(publishProject)
-      arguments: --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)
-      publishWebProjects: true
-      zipAfterPublish: false
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-
+      arguments: --configuration $(buildConfiguration) --project $(packProject) --no-build
